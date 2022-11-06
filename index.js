@@ -45,7 +45,7 @@ class VoteManager {
 
      async setBlockHash(){
         this.blockHash = (await web3.eth.getBlock(this.endBlock)).parentHash;
-        console.log(`BLCOK HASH : ${this.blockHash }`);
+        console.log(`BLCOK PARENT HASH : ${this.blockHash }`);
      }
 
      async findWinner(){

@@ -26,7 +26,7 @@ class VoteManager {
 
             console.log(`Contract : ${this.eventName}`);
 
-            await this.setEndBlock(22657007);
+            await this.setEndBlock(22822222);
             await this.setBlockHash();
 
             console.log(`----------------------------`);
@@ -105,8 +105,6 @@ class VoteManager {
                                 &address=${process.env.ADDRESS}
                                 &apikey=${process.env.BSC_API_KEY}`.replaceAll(" ","").replaceAll("\n","");
 
-                console.log(uri);
-
                 const {data} = await axios.get(uri);
                 const rawLogs = Array.from(data.result);
                 
@@ -116,7 +114,7 @@ class VoteManager {
                         
                         event._block = parseInt(item.blockNumber,16);
                         event._timestamp = parseInt(item.timeStamp,16);
-                        event._txHash = item.transactionHash;
+                        event._transactionID = item.transactionHash;
                         delete event. __length__ ;
                         delete event[`0`];
                         delete event[`1`];

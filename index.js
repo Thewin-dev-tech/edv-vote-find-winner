@@ -26,7 +26,7 @@ class VoteManager {
 
             console.log(`Contract : ${this.eventName}`);
 
-            await this.setEndBlock(22657171);
+            await this.setEndBlock(22657007);
             await this.setBlockHash();
 
             console.log(`----------------------------`);
@@ -44,7 +44,7 @@ class VoteManager {
      }
 
      async setBlockHash(){
-        this.blockHash = (await web3.eth.getBlock(this.endBlock)).hash;
+        this.blockHash = (await web3.eth.getBlock(this.endBlock)).parentHash;
         console.log(`BLCOK HASH : ${this.blockHash }`);
      }
 

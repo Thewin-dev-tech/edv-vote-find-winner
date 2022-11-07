@@ -111,7 +111,7 @@ class VoteManager {
                                 &address=${process.env.ADDRESS}
                                 &apikey=${process.env.BSC_API_KEY}`.replaceAll(" ","").replaceAll("\n","");
 
-                const rawLogs = ((await await fetch(uri)).json()).result;
+                const rawLogs = (await (await fetch(uri)).json()).result;
                 
                 return (await Promise.all(rawLogs.map(async(item,i)=>{
                         

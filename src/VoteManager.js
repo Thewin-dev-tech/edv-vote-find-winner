@@ -1,6 +1,6 @@
 const Web3 = require("web3");
-const axios = require("axios");
 const fs = require("fs/promises");
+const fetch = require("node-fetch");
 
 require("dotenv").config();
 
@@ -111,8 +111,7 @@ class VoteManager {
                                 &address=${process.env.ADDRESS}
                                 &apikey=${process.env.BSC_API_KEY}`.replaceAll(" ","").replaceAll("\n","");
 
-                const {data} = await axios.get(uri);
-                const rawLogs = Array.from(data.result);
+                const rawLogs = ((await await fetch(uri)).json()).result;
                 
                 return (await Promise.all(rawLogs.map(async(item,i)=>{
                         

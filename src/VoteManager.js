@@ -11,10 +11,10 @@ class VoteManager {
     voteContract = null;
     eventName = "";
     endBlock = 0;
-    blockHash = "";
-    voterDataFile = "./voter.json";
+    blockParentHash = "";
+    voterDataFile = "./files/voter.json";
 
-     constructor(){
+     constructor(deadlineBlock){
 
        (async()=>{
 
@@ -26,8 +26,8 @@ class VoteManager {
 
             console.log(`Contract : ${this.eventName}`);
 
-            await this.setEndBlock(22822222);
-            await this.setBlockHash();
+            await this.setEndBlock(deadlineBlock);
+            await this.setBlockParentHash();
 
             console.log(`----------------------------`);
 
@@ -43,32 +43,38 @@ class VoteManager {
         console.log(`END BLOCK : ${block}`);
      }
 
-     async setBlockHash(){
-        this.blockHash = (await web3.eth.getBlock(this.endBlock)).parentHash;
-        console.log(`BLCOK PARENT HASH : ${this.blockHash }`);
+     async setBlockParentHash(){
+        this.blockParentHash = (await web3.eth.getBlock(this.endBlock)).parentHash;
+        console.log(`BLOCK PARENT HASH : ${this.blockParentHash }`);
      }
 
      async findWinner(){
-        let lastBlockHexNumber = String(this.blockHash).substring(String(this.blockHash).length-4 ,String(this.blockHash).length);
+        try{
 
-        const voter = JSON.parse(await fs.readFile(this.voterDataFile,`utf8`));
+            let lastBlockHexNumber = String(this.blockParentHash).substring(String(this.blockParentHash).length-4 ,String(this.blockParentHash).length);
 
-        let voterWithPoint = await  Promise.all(
-            Array.from(voter).map(async (item,i)=>{
+            const voter = JSON.parse(await fs.readFile(this.voterDataFile,`utf8`));
 
-                let lastNumber = (String(item._voter).substring(String(item._voter).length-4 ,String(item._voter).length));
-                let diff =  Math.abs(parseInt(lastBlockHexNumber,"16") - parseInt(lastNumber,"16"));
+            let voterWithPoint = await  Promise.all(
+                Array.from(voter).map(async (item,i)=>{
 
-                item.lastNumber = lastNumber;
-                item.diff = diff;
+                    let lastNumber = (String(item._voter).substring(String(item._voter).length-4 ,String(item._voter).length));
+                    let diff =  Math.abs(parseInt(lastBlockHexNumber,"16") - parseInt(lastNumber,"16"));
 
-                return item;
-            })
-        );
+                    item.lastNumber = lastNumber;
+                    item.diff = diff;
 
-        voterWithPoint = voterWithPoint.sort((a,b)=>a.diff-b.diff);
+                    return item;
+                })
+            );
 
-        console.table(voterWithPoint);
+            voterWithPoint = voterWithPoint.sort((a,b)=>a.diff-b.diff);
+
+            console.table(voterWithPoint);
+
+        }catch(err){
+            console.error(`find winner error-> `,err.stack);
+        }
     }
 
      async writeVoterData(){
@@ -80,7 +86,7 @@ class VoteManager {
             await fs.writeFile(this.voterDataFile,JSON.stringify(voter));
             
         }catch(error){
-            console.log(error.stack);
+            console.log(`write voter error ->`,error.stack);
         }
      }
 
@@ -128,6 +134,4 @@ class VoteManager {
     }
 }
 
-(main =()=>{
-    const vt = new VoteManager();
-})();
+module.exports = VoteManager;
